@@ -42,15 +42,17 @@ class FadeRoute extends PageRoute {
 
 class SimpleRoute extends PageRoute {
   SimpleRoute({
-    @required String name,
-    @required this.title,
+    String name,
+    this.title,
     @required this.builder,
+    this.argus
   }) : super(settings: RouteSettings(
-    name: name,
+    name: name,arguments: argus
   ));
 
   final String title;
   final WidgetBuilder builder;
+  final String argus;
 
   @override
   Color get barrierColor => null;

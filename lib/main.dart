@@ -1,11 +1,12 @@
 import 'dart:html';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutterblog/commonhtml/404.dart';
 import 'package:flutterblog/route.dart';
 import 'package:flutterblog/widget/TileImage.dart';
 
-
+import 'widget/ArticalPage.dart';
 import 'widget/HomePage.dart';
 
 void main() {
@@ -15,16 +16,9 @@ void main() {
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
-  Route<dynamic> route({String name, int index}) {
-    return SimpleRoute(
-        name: name,
-        builder: (_) => new Scaffold(
-              body: MyHomePage(title: 'Flutter Demo Home Page'),
-            ));
-  }
-
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
         title: 'Flutter Demo',
         theme: new ThemeData(
@@ -39,19 +33,18 @@ class MyApp extends StatelessWidget {
           debugPrint(settings.toString());
           switch (settings.name) {
             case "/":
-              return route();
-            case "/firstPage":
-              return route();
-            case "/WidgetPage":
-              return route();
-            case "/CollectionPage":
-              return route();
-            case "/FourthPage":
-              return route();
-            case "/404":
-              return SimpleRoute(builder: (_) => new NoResource());
+              return SimpleRoute(
+                  builder: (_) =>
+                  new Scaffold(
+                    body: MyHomePage(title: 'Flutter Demo Home Page'),
+                  ));
+              break;
+            case "artical":
+              return SimpleRoute(
+                  builder: (_) => new ArticalPage(), argus: settings.arguments);
+              break;
             default:
-              return route();
+              return SimpleRoute(builder: (_) => new NoResource());
           }
         });
   }
@@ -59,16 +52,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -76,50 +59,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  final List<ListItem> listData = [];
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-//    final file = new Directory("assets/myblog");
-//    file.list().forEach((element) {
-//      debugPrint(element.path);
-//    });
-//    Directory directory = Directory("/assets/config/");
-//  directory.listSync().forEach((file) {
-//    print(file.path);
-//  });
-//
-//
-//    Xml2Json xml2json = new Xml2Json();
-
-    for (int i = 0; i < 20; i++) {
-      listData.add( ListItem("我是测试标题$i", Icons.cake));
-    }
-
     final AppBarTheme appBarTheme = AppBarTheme.of(context);
     final ThemeData theme = Theme.of(context);
     TextStyle centerStyle =
         appBarTheme.textTheme?.headline6 ?? theme.primaryTextTheme.headline6;
     debugPrint(centerStyle.toString());
-    var size = MediaQuery.of(context).size;
+    var size = MediaQuery
+        .of(context)
+        .size;
     Size newSize;
     if (size.aspectRatio > 1.066667) {
       //图片变形
@@ -129,60 +79,38 @@ class _MyHomePageState extends State<MyHomePage> {
       newSize = new Size(size.width, size.width * 9 / 16);
     }
     return NestedScrollView(
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              // These are the slivers that show up in the "outer" scroll view.
-              return <Widget>[
-                SliverOverlapAbsorber(
-                  // This widget takes the overlapping behavior of the SliverAppBar,
-                  // and redirects it to the SliverOverlapInjector below. If it is
-                  // missing, then it is possible for the nested "inner" scroll view
-                  // below to end up under the SliverAppBar even when the inner
-                  // scroll view thinks it has not been scrolled.
-                  // This is not necessary if the "headerSliverBuilder" only builds
-                  // widgets that do not overlap the next sliver.
-                  handle:
-                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                  sliver: SliverAppBar(
-                    title: const Text('豆腐的博客'),
-                    backgroundColor: Colors.black,
-                    // This is the title in the app bar.
-                    pinned: true,
-                    expandedHeight: newSize.height,
-                    // The "forceElevated" property causes the SliverAppBar to show
-                    // a shadow. The "innerBoxIsScrolled" parameter is true when the
-                    // inner scroll view is scrolled beyond its "zero" point, i.e.
-                    // when it appears to be scrolled below the SliverAppBar.
-                    // Without this, there are cases where the shadow would appear
-                    // or not appear inappropriately, because the SliverAppBar is
-                    // not actually aware of the precise position of the inner
-                    // scroll views.
-                    forceElevated: innerBoxIsScrolled,
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: TitleImage("assets/images/categories-bg.jpg"),
-                    ),
-                    titleSpacing: 50,
-                    actions: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(
-                          0,
-                          0,
-                          50,
-                          0,
-                        ),
-                        child: Center(
-                            child: Text(
-                          "关于",
-                          style: TextStyle(fontSize: 18),
-                        )),
-                      )
-                    ],
+      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+        // These are the slivers that show up in the "outer" scroll view.
+        return <Widget>[
+          SliverOverlapAbsorber(
+            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+            sliver: SliverAppBar(
+              title: const Text('豆腐的博客'),
+              backgroundColor: Colors.black,
+              // This is the title in the app bar.
+              pinned: true,
+              expandedHeight: newSize.height,
+              forceElevated: innerBoxIsScrolled,
+              flexibleSpace: FlexibleSpaceBar(
+                background: TitleImage("assets/images/categories-bg.jpg"),
+              ),
+              titleSpacing: 50,
+              actions: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(right: 50),
+                  child: Center(
+                      child: Text(
+                        "关于",
+                        style: TextStyle(fontSize: 18),
+                      )),
+                )
+              ],
 //                bottom: Image.asset('images/categories-bg.jpg'),
-                  ),
-                ),
-              ];
-            },
-            body: HomePage(
+            ),
+          ),
+        ];
+      },
+      body: HomePage(
 //              child:  ListView.builder(
 //                shrinkWrap: true,
 //                itemBuilder: (BuildContext context, int index) {
@@ -190,8 +118,8 @@ class _MyHomePageState extends State<MyHomePage> {
 //                },
 //                itemCount: listData.length,
 //              ),
-            ),
-      );
+      ),
+    );
   }
 }
 
@@ -209,10 +137,10 @@ class ListItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  InkWell(
-      child:  ListTile(
-        leading:  Icon(listItem.iconData),
-        title:  Text(listItem.title),
+    return InkWell(
+      child: ListTile(
+        leading: Icon(listItem.iconData),
+        title: Text(listItem.title),
       ),
       onTap: () {},
     );
